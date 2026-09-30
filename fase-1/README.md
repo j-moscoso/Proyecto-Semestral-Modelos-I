@@ -72,6 +72,8 @@ code .
 
 En VS Code, instalar las extensiones Python y Jupyter si no están disponibles, abrir `fase-1/notebook.ipynb`, seleccionar `.venv` como kernel y ejecutar **Run All** desde el inicio. El notebook resuelve sus rutas desde la raíz, `fase-1/` o la carpeta complementaria. No requiere Google Drive ni rutas personales.
 
+**Dependencias del notebook:** `notebook.ipynb` no es un archivo autónomo. Para ejecutarlo desde cero deben estar disponibles `fase-1/data/train.csv` y `fase-1/features.py`, además de las dependencias instaladas desde `fase-1/requirements.txt`. Estos archivos forman parte de la entrega y el notebook los carga durante el entrenamiento.
+
 ## Modelo guardado e inferencia
 
 El pipeline completo se guarda en `fase-1/modelo.joblib` e incluye extracción de variables, preprocesador y estimador. La carga debe realizarse con las dependencias instaladas y con `fase-1/features.py` accesible para Python, porque el pipeline serializado referencia sus funciones. El notebook comprueba la carga con `joblib.load`, valida con `np.allclose` que las predicciones del modelo recargado coincidan y predice tres filas crudas con los 11 predictores originales, sin `id` ni `price`.
