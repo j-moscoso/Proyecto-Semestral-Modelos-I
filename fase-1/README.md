@@ -70,9 +70,9 @@ py -3.11 -m venv .venv
 code .
 ```
 
-En VS Code, instalar las extensiones Python y Jupyter si no están disponibles, abrir `fase-1/notebook.ipynb`, seleccionar `.venv` como kernel y ejecutar **Run All** desde el inicio. El notebook resuelve sus rutas desde la raíz, `fase-1/` o la carpeta complementaria. No requiere Google Drive ni rutas personales.
+En VS Code, instalar las extensiones Python y Jupyter si no están disponibles, abrir `fase-1/notebook.ipynb`, seleccionar `.venv` como kernel y ejecutar **Run All** desde el inicio. La primera celda instala o verifica automáticamente los paquetes de `requirements.txt` en el kernel activo; si se actualizan paquetes que ya estaban cargados, reiniciar el kernel y volver a ejecutar **Run All**. El notebook resuelve sus rutas desde la raíz, `fase-1/` o la carpeta complementaria. No requiere Google Drive ni rutas personales.
 
-**Dependencias del notebook:** `notebook.ipynb` no es un archivo autónomo. Para ejecutarlo desde cero deben estar disponibles `fase-1/data/train.csv` y `fase-1/features.py`, además de las dependencias instaladas desde `fase-1/requirements.txt`. Estos archivos forman parte de la entrega y el notebook los carga durante el entrenamiento.
+**Archivos necesarios:** aunque el notebook instala sus paquetes, no es autónomo. Para entrenar desde cero también deben estar disponibles `fase-1/data/train.csv` y `fase-1/features.py`; ambos forman parte de la entrega y el notebook los carga durante el entrenamiento.
 
 ## Modelo guardado e inferencia
 
