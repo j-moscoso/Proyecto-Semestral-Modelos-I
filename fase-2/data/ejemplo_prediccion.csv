@@ -1,0 +1,13 @@
+id,brand,model,model_year,milage,fuel_type,engine,transmission,ext_col,int_col,accident,clean_title
+111355,Nissan,Murano SV,2022,23677,Gasoline,3.5L V6 24V MPFI DOHC,Automatic CVT,Sunset Drift Chromaflair,Graphite,None reported,
+182258,Ford,Thunderbird Deluxe,2004,50000,Gasoline,280.0HP 3.9L 8 Cylinder Engine Gasoline Fuel,A/T,Gold,Beige,,
+14147,Buick,Enclave Avenir,2019,109646,,3.6L V6 24V GDI DOHC,,Dark Moss,Chestnut,None reported,Yes
+79313,BMW,340 i,2016,102000,Gasoline,320.0HP 3.0L Straight 6 Cylinder Engine Gasoline Fuel,8-Speed A/T,White,Black,,
+101160,Toyota,Highlander SE,2020,75151,Gasoline,295.0HP 3.5L V6 Cylinder Engine Gasoline Fuel,8-Speed A/T,Gray,Black,None reported,Yes
+112309,Chevrolet,Ram 2500 Laramie Quad Cab,1996,120000,Diesel,250.0HP 5.9L Straight 6 Cylinder Engine Diesel Fuel,A/T,Red,Gray,None reported,Yes
+7832,Volkswagen,Jetta SportWagen SE,2010,107000,Gasoline,170.0HP 2.5L 5 Cylinder Engine Gasoline Fuel,Transmission w/Dual Shift Mode,Black,Beige,None reported,Yes
+35553,Ford,Mustang GT Premium,2014,127500,Gasoline,435.0HP 5.0L 8 Cylinder Engine Gasoline Fuel,6-Speed M/T,Silver,Black,None reported,Yes
+28720,Porsche,911 Carrera S,2020,21613,Gasoline,3.6 Liter SIDI DOHC,Automatic,Black,Red,None reported,
+87394,Porsche,Cayenne Platinum Edition,2018,81400,Gasoline,3.0L V6 24V GDI DOHC Turbo,8-Speed Automatic,Black,Black,None reported,Yes
+72704,Lexus,IS 350 Base,2015,124000,Gasoline,306.0HP 3.5L V6 Cylinder Engine Gasoline Fuel,6-Speed A/T,Gray,Red,At least 1 accident or damage reported,Yes
+8528,GMC,Acadia SLE-2,2015,119000,Gasoline,281.0HP 3.6L V6 Cylinder Engine Gasoline Fuel,A/T,Black,Black,At least 1 accident or damage reported,Yes
