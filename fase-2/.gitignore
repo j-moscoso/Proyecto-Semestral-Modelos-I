@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+*.tmp
+.env
+outputs/*
+!outputs/.gitkeep
+models/v-docker/
+models/v-test*/
