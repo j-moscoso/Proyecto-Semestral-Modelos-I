@@ -11,9 +11,14 @@ from src.schema import CATEGORICAL_INPUT, NUMERIC_INPUT
 
 
 def normalize_missing(df: pd.DataFrame) -> pd.DataFrame:
-    """Normaliza ausencias y tipos en las columnas de entrada presentes."""
+    """Copia el DataFrame y normaliza nulos en las columnas de entrada presentes.
+
+    En categóricas, ``None``, ``pd.NA``, ``NaN``, cadenas vacías y espacios
+    pasan a ``np.nan``; los demás valores se convierten a ``str`` y el dtype
+    queda como ``object``. Las numéricas se convierten a ``float64`` usando
+    ``errors="coerce"``. Las columnas ausentes se ignoran.
+    """
     result = df.copy()
-    # TODO(Slleider): reforzar
     for column in CATEGORICAL_INPUT:
         if column in result.columns:
             values = result[column]
@@ -36,7 +41,12 @@ def normalize_missing(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def extract_engine_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Devuelve una copia con HP, litros y cilindros extraídos de ``engine``."""
+    """Copia el DataFrame y extrae HP, litros y cilindros de ``engine``.
+
+    El texto se procesa temporalmente con dtype ``string``; las extracciones
+    numéricas quedan como ``float64`` y usan ``np.nan`` si el texto está
+    ausente o no coincide con el patrón.
+    """
     result = df.copy()
     engine = result["engine"].astype("string")
     result["horsepower"] = pd.to_numeric(
@@ -55,7 +65,13 @@ def extract_engine_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def extract_transmission_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Devuelve una copia con el tipo y velocidades de transmisión."""
+    """Copia el DataFrame y extrae tipo y velocidades de transmisión.
+
+    El texto se procesa temporalmente con dtype ``string``. Las velocidades
+    quedan como ``float64`` y ``transmission_type`` como ``object``; texto
+    ausente, vacío o compuesto solo por espacios produce ``np.nan`` para que
+    el imputador posterior lo sustituya por ``Desconocido``.
+    """
     result = df.copy()
     transmission = result["transmission"].astype("string").str.strip()
     normalized = transmission.str.lower()
@@ -70,10 +86,11 @@ def extract_transmission_features(df: pd.DataFrame) -> pd.DataFrame:
     transmission_type.loc[is_cvt] = "CVT"
     transmission_type.loc[is_manual] = "manual"
     transmission_type.loc[is_automatic] = "automatica"
+    has_transmission = transmission.notna() & transmission.fillna("").ne("")
     transmission_type.loc[
-        transmission.notna() & transmission_type.isna()
+        has_transmission & transmission_type.isna()
     ] = "otra"
-    result["transmission_type"] = transmission_type
+    result["transmission_type"] = transmission_type.astype(object)
     result["transmission_speeds"] = pd.to_numeric(
         transmission.str.extract(
             r"(?i)\b(\d+)\s*[- ]?\s*speed\b", expand=False

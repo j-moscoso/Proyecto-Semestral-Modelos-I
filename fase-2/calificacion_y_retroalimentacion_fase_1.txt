@@ -1,0 +1,58 @@
+Calificación del proyecto Fase 1
+Modelos y Simulación de Sistemas I | Precio de autos usados
+Integrantes: Juan Manuel Moscoso Torres, Slleider David Rojas Aleman y Samuel Castaño Arenas.
+Calificación final: 94/100 — 4,7/5,0
+Criterio Puntaje Observación
+Problema y dataset 8/10 Objetivo, tamaño y faltantes adecuados. No se aclara que el conjunto de competición
+
+es sintético frente al requisito de datos reales.
+
+Análisis exploratorio 15/15 Distribuciones, faltantes, categorías, correlaciones y extremos interpretados;
+
+decisiones y limitaciones justificadas.
+
+Preparación de datos 14/15 Extracción e imputación en pipeline, sin eliminar filas. Una transmisión ausente
+
+produce TypeError pese a declararse admisible.
+
+Partición y fuga de información 19/20 Split reproducible y CV con ajustes por fold. El EDA previo consulta todo el objetivo y
+
+orienta decisiones de preparación.
+
+Modelos, métricas y resultados 20/20 Dos baselines, Random Forest, CV y métricas pertinentes. Mejora cuantificada sin
+
+exagerar el alcance del R² bajo.
+
+Reproducibilidad y persistencia 10/10 Datos, módulo, versiones y pipeline completo incluidos; el modelo entregado carga y
+
+reproduce las métricas reportadas.
+
+Organización y documentación 4/5 Documentación detallada. Rutas de PowerShell incorrectas y referencia a una carpeta
+
+de notebooks ausente en la entrega.
+
+Git Flow y colaboración 4/5 Main, develop, ramas de trabajo y seis PR integrados; contribuciones técnicas de los
+
+tres. Sin revisiones formales registradas.
+TOTAL 94/100 Nota final: 4,7/5,0 (redondeada a un decimal).
+Retroalimentación para la entrega 2
+La entrega presenta un proceso sólido: EDA interpretado, tratamiento explícito de faltantes, ingeniería reutilizable, dos baselines y
+validación cruzada con el preprocesamiento dentro de cada fold. Se ejecutaron las celdas de análisis y modelado con las versiones
+declaradas, incluida la CV y la recarga. El modelo entregado reproduce las métricas: RMSE de USD 69.171, MAE de USD 20.317 y R² de
+0,1396. La interpretación reconoce correctamente que mejorar el baseline no significa valorar con precisión cada vehículo. Se
+verifican aportes técnicos de los tres integrantes y seis PR integrados.
+Aclaren la procedencia del dataset. Playground Series S4E9 utiliza datos sintéticos generados a partir de datos reales; sus 188.533 filas
+no deben describirse como observaciones directas del mercado. Aunque el README indica que el problema fue aprobado, falta
+explicar esta naturaleza y su relación con el requisito de datos reales de la fase 1. Distingan el conjunto de competición de su fuente
+original y limiten las conclusiones sobre mercado, anuncios repetidos y aplicación comercial a lo que los datos permiten sostener.
+Reserven la prueba antes del EDA que orienta decisiones. Actualmente se consultan precios de todo el conjunto para justificar
+conservar variables y representar faltantes, aunque imputadores, codificadores, escalador y modelo sí se ajustan correctamente en
+entrenamiento. Es una exposición exploratoria limitada, distinta de entrenar directamente con la prueba. Mantengan la discusión de
+posibles vehículos repetidos y, para la siguiente entrega, validen la disponibilidad de accident y clean_title al predecir. Evalúen
+cambios de codificación o del objetivo solo en entrenamiento.
+Para la entrega 2, conserven features.py junto al pipeline y documenten el contrato de entrada, categorías desconocidas y valores
+ausentes. Corrijan el faltante de transmission: genera pd.NA y falla con «boolean value of NA is ambiguous». Normalicen la ausencia a
+un formato admitido por el imputador y prueben entradas incompletas; las categorías nuevas y engine ausente sí funcionaron.
+Corrijan en PowerShell las rutas de la forma \.venv\Scripts\python.exe a .\.venv\Scripts\python.exe; eliminen la referencia a
+notebooks complementarios que no están en el ZIP. Conserven una ejecución con salidas para facilitar la revisión y registren la
+aprobación de otro integrante antes de integrar los PR.
