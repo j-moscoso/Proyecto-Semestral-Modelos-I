@@ -1,0 +1,8 @@
+PS> docker run --rm -e "GIT_COMMIT=$env:GIT_COMMIT" -v "${PWD}/data:/app/data:ro" -v "${PWD}/models:/app/models" modelos-fase2:1.0 python train.py --data /app/data/train.csv --output-dir /app/models --version v-docker
+Versión guardada: v-docker
+Modelo - RMSE: 69170.8967, MAE: 20316.5025, R²: 0.1396
+Baseline media - RMSE: 74573.0509, MAE: 29086.8472, R²: -0.0000
+Baseline mediana - RMSE: 75702.6362, MAE: 26547.8970, R²: -0.0305
+Mejora frente a la media - RMSE: 7.24%, MAE: 30.15%
+Rutas generadas: /app/models/v-docker/modelo.joblib, /app/models/v-docker/metrics.json, /app/models/v-docker/metadata.json
+EXIT_CODE=0

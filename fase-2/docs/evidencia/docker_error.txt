@@ -1,0 +1,9 @@
+PS> docker run --rm -v "${PWD}/models:/app/models:ro" -v "C:\Users\SAMUEL\AppData\Local\Temp\fase2-docker-invalid-a1c27b04c76748a4a3ac8f74513626ad:/app/invalid:ro" -v "${PWD}/outputs:/app/outputs" modelos-fase2:1.0 python predict.py --model /app/models/v-docker --input /app/invalid/faltante.csv --output /app/outputs/prediccion_invalida.csv
+docker : ERROR: Faltan columnas requeridas: transmission.
+En línea: 2 Carácter: 1146
++ ... ePath $log; docker run --rm -v "${PWD}/models:/app/models:ro" -v "${b ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Faltan c...: transmission.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EXIT_CODE=1

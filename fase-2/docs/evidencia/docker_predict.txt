@@ -1,0 +1,5 @@
+PS> docker run --rm -v "${PWD}/data:/app/data:ro" -v "${PWD}/models:/app/models:ro" -v "${PWD}/outputs:/app/outputs" modelos-fase2:1.0 python predict.py --model /app/models/v-docker --input /app/data/ejemplo_prediccion.csv --output /app/outputs/predicciones.csv
+Filas predichas: 12
+Columnas ignoradas: id
+Salida: /app/outputs/predicciones.csv
+EXIT_CODE=0
