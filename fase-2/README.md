@@ -10,7 +10,7 @@ El proyecto estima el precio (`price`) de vehículos usados a partir de once var
 
 - Se corrigió el tratamiento de valores faltantes en `transmission` para que las predicciones no fallen.
 - Se normalizaron las rutas de PowerShell de la documentación.
-- Se aclaró que Playground Series S4E9 es sintético, generado a partir del conjunto real *Used Car Price Prediction Dataset*; sus 188.533 filas no son registros directos del mercado.
+- Se aclaró que Playground Series S4E9 es sintético, generado por un modelo entrenado sobre un dataset que combina datos reales y sintéticos; no es posible determinar qué proporción de sus 188.533 filas refleja registros reales.
 - Se documentó que el EDA de la Fase 1 consultó todo el conjunto, incluido `price`, aunque los transformadores y el modelo se ajustaron solo con `train`.
 - El notebook de la Fase 1 se guardó con las salidas de su ejecución.
 
@@ -85,13 +85,14 @@ Resultados de test tomados de los archivos `metrics.json` de cada versión. RMSE
 | v2 | Baseline media | 74,969.869 | 29,070.713 | -0.00000001 |
 | v2 | Baseline mediana | 76,101.299 | 26,575.740 | -0.030411 |
 
-Playground Series S4E9 es sintético y se generó a partir del conjunto real *Used Car Price Prediction Dataset*; sus 188.533 filas no son observaciones directas del mercado. Además, la división aleatoria puede situar anuncios iguales o similares en entrenamiento y prueba; faltan identificadores confiables para agrupar vehículos. El desempeño no garantiza resultados sobre vehículos nuevos ni uso comercial. Más detalles en [Datos y limitaciones](./docs/DATOS_Y_LIMITACIONES.md).
+Playground Series S4E9 es sintético y fue generado por un modelo entrenado sobre un dataset que combina datos reales y sintéticos; no es posible determinar qué proporción de sus 188.533 filas refleja registros reales. Además, la división aleatoria puede situar anuncios iguales o similares en entrenamiento y prueba; faltan identificadores confiables para agrupar vehículos. El desempeño no garantiza resultados sobre vehículos nuevos ni uso comercial. Más detalles en [Datos y limitaciones](./docs/DATOS_Y_LIMITACIONES.md). En la validación interna, dejar `accident` y `clean_title` vacíos aumentó el RMSE 1.935287 % frente a la referencia; consulte la [evidencia de disponibilidad](./docs/evidencia/analisis_disponibilidad.txt).
 
 ## Evidencia
 
 - [Entrenamiento v1](./docs/evidencia/train_v1.txt) y [entrenamiento v2](./docs/evidencia/train_v2.txt).
 - [Predicción exitosa](./docs/evidencia/predict_ok.txt) y [predicción con error](./docs/evidencia/predict_error.txt).
 - [Pytest local](./docs/evidencia/pytest.txt).
+- [Análisis de disponibilidad de `accident` y `clean_title`](./docs/evidencia/analisis_disponibilidad.txt).
 - Docker: [build](./docs/evidencia/docker_build.txt), [entrenamiento](./docs/evidencia/docker_train.txt), [predicción](./docs/evidencia/docker_predict.txt), [entrada inválida](./docs/evidencia/docker_error.txt) y [pytest](./docs/evidencia/docker_pytest.txt).
 
 ## Git Flow

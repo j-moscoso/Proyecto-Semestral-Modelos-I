@@ -13,7 +13,7 @@ El archivo `data/train.csv` contiene 188.533 observaciones y 13 columnas: `id`, 
 
 ## Procedencia de los datos
 
-Playground Series S4E9 es un conjunto sintético: según la [pestaña Data de Kaggle](https://www.kaggle.com/competitions/playground-series-s4e9/data), sus datos de entrenamiento y prueba fueron generados por un modelo de aprendizaje profundo entrenado con el [Used Car Price Prediction Dataset](https://www.kaggle.com/datasets/taeefnajib/used-car-price-prediction-dataset). Por tanto, sus 188.533 filas no son observaciones directas del mercado. Los resultados describen el desempeño sobre este conjunto y no bastan para estimar el mercado real, confirmar que anuncios repetidos correspondan a vehículos repetidos ni justificar por sí solos una aplicación comercial.
+Playground Series S4E9 es un conjunto sintético: sus datos de entrenamiento y prueba fueron generados por un modelo de aprendizaje profundo entrenado con el [Used Car Price Prediction Dataset](https://www.kaggle.com/datasets/taeefnajib/used-car-price-prediction-dataset), que según su propia descripción combina datos reales observados y datos sintéticos. No es posible determinar qué proporción de las 188.533 filas refleja registros reales. Los resultados describen el comportamiento del modelo sobre estos datos y no se extrapolan al mercado real, ni permiten confirmar que anuncios repetidos correspondan a vehículos repetidos o justificar por sí solos una aplicación comercial.
 
 | Variable | Valores faltantes | Porcentaje | Tratamiento |
 | --- | ---: | ---: | --- |

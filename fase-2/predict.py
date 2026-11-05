@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 import tempfile
+import traceback
 from pathlib import Path
 
 import pandas as pd
@@ -45,11 +46,11 @@ def main(argv: list[str] | None = None) -> int:
         try:
             input_df = pd.read_csv(input_path)
         except (
-            OSError,
-            UnicodeError,
-            ValueError,
             pd.errors.EmptyDataError,
             pd.errors.ParserError,
+            UnicodeDecodeError,
+            PermissionError,
+            FileNotFoundError,
         ) as error:
             raise InputValidationError(
                 f"No se pudo leer el CSV de entrada '{input_path}': {error}"
@@ -96,7 +97,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
     except Exception as error:
-        print(f"ERROR: {error}", file=sys.stderr)
+        print(
+            f"ERROR inesperado (posible bug): {type(error).__name__}: {error}",
+            file=sys.stderr,
+        )
+        traceback.print_exc(file=sys.stderr)
         return 1
     finally:
         if temporary_path is not None and temporary_path.exists():
