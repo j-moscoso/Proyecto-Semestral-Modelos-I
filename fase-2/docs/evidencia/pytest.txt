@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\SAMUEL\OneDrive\Documentos\ProyectosUdea\Modelos I\Proyecto-Semestral-Modelos-I\fase-2\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\SAMUEL\OneDrive\Documentos\ProyectosUdea\Modelos I\Proyecto-Semestral-Modelos-I\fase-2
+configfile: pytest.ini
+testpaths: tests
+collecting ... collected 9 items
+
+tests/test_aplicacion.py::test_entrenamiento_y_almacenamiento PASSED     [ 11%]
+tests/test_aplicacion.py::test_carga_y_prediccion PASSED                 [ 22%]
+tests/test_aplicacion.py::test_valores_faltantes PASSED                  [ 33%]
+tests/test_aplicacion.py::test_entrada_invalida PASSED                   [ 44%]
+tests/test_aplicacion.py::test_versionamiento PASSED                     [ 55%]
+tests/test_aplicacion.py::test_categoria_desconocida PASSED              [ 66%]
+tests/test_aplicacion.py::test_columnas_reordenadas_y_extra PASSED       [ 77%]
+tests/test_aplicacion.py::test_help[main0] PASSED                        [ 88%]
+tests/test_aplicacion.py::test_help[main1] PASSED                        [100%]
+
+============================== 9 passed in 6.64s ==============================

@@ -1,0 +1,3 @@
+Filas predichas: 12
+Columnas ignoradas: id
+Salida: outputs\predict_acceptance_b.csv

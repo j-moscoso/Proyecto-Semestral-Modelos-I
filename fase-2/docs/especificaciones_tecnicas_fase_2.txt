@@ -1,0 +1,367 @@
+================================================================================
+ESPECIFICACIÓN TÉCNICA - FASE 2: SCRIPTS Y DOCKER
+Proyecto Integrador versión 1 - 2026 II
+Modelos y Simulación de Sistemas I
+Docente - Andrés Parra
+================================================================================
+
+1. INTRODUCCIÓN
+--------------------------------------------------------------------------------
+La Fase 2 del Proyecto Integrador tiene como propósito transformar el trabajo 
+desarrollado en el notebook de la Fase 1 en una aplicación reutilizable. El equipo 
+deberá poder entrenar el modelo y generar predicciones mediante comandos, sin 
+ejecutar previamente el notebook ni modificar manualmente el código en cada 
+ejecución.
+
+El énfasis será la organización del código, la reproducibilidad, el almacenamiento 
+de versiones del modelo y la ejecución mediante Docker. Se conservarán el problema, 
+los datos y el enfoque de modelado de la fase anterior, incorporando las 
+correcciones técnicas que sean necesarias.
+
+
+2. OBJETIVOS DE LA FASE
+--------------------------------------------------------------------------------
+- Implementar scripts independientes de entrenamiento y predicción.
+- Reutilizar el preprocesamiento sin introducir fuga de información.
+- Definir entradas, salidas y parámetros de ejecución claros.
+- Guardar y recuperar versiones identificables del modelo.
+- Construir una imagen Docker que permita ejecutar ambos procesos.
+- Implementar pruebas básicas con pytest y documentar su ejecución.
+
+
+3. COMPETENCIAS QUE SE DESARROLLARÁN
+--------------------------------------------------------------------------------
+- Organización modular de código Python y uso de la línea de comandos.
+- Gestión de dependencias y entornos reproducibles.
+- Contenerización de aplicaciones y persistencia de archivos.
+- Pruebas automatizadas, documentación y trabajo colaborativo con GitHub.
+
+
+4. ALCANCE Y CONTINUIDAD CON LA FASE 1
+--------------------------------------------------------------------------------
+La fase finaliza cuando otra persona puede obtener el repositorio, preparar los datos 
+siguiendo el README, ejecutar el entrenamiento, cargar una versión guardada y 
+generar predicciones, tanto en el entorno local como dentro de un contenedor Docker.
+
+- Conservar la carpeta fase-1 y agregar la carpeta fase-2 en el mismo repositorio.
+- Mantener el problema y el conjunto de datos aprobados. No es obligatorio 
+  entrenar un algoritmo nuevo ni mejorar la métrica.
+- Aplicar las correcciones de la retroalimentación de la Fase 1 y documentar los 
+  cambios que afecten el preprocesamiento, la validación o el modelo.
+- Mantener una estrategia de evaluación consistente con el problema y libre de 
+  fuga de información.
+
+En esta entrega no se exige implementar la API REST, publicar el contenedor en la 
+nube ni incorporar monitoreo. Estos componentes corresponden a las fases siguientes. 
+Tampoco se exige usar MLflow, DVC, Docker Compose ni una plataforma de integración continua.
+
+
+5. ORGANIZACIÓN DE LA APLICACIÓN
+--------------------------------------------------------------------------------
+Los archivos train.py y predict.py deberán ser puntos de entrada ejecutables. La 
+lógica que ambos necesiten deberá organizarse en funciones o módulos reutilizables; 
+no será suficiente copiar todas las celdas del notebook en un archivo .py.
+
+- Separar lectura y validación de datos, construcción del preprocesamiento, 
+  entrenamiento, evaluación y almacenamiento.
+- Evitar duplicar transformaciones entre entrenamiento y predicción.
+- No entrenar modelos ni leer archivos automáticamente al importar un módulo.
+- Usar un bloque de entrada if __name__ == "__main__": cuando corresponda.
+- Recibir las rutas y opciones mediante argumentos de línea de comandos; se 
+  recomienda argparse.
+- Permitir consultar las opciones disponibles mediante --help.
+- Evitar rutas absolutas de un computador, solicitudes interactivas y dependencias 
+  de celdas ejecutadas previamente.
+
+Los nombres de los argumentos mostrados en esta especificación son de referencia. 
+Podrán utilizarse otros equivalentes, siempre que cubran los requisitos y estén 
+documentados con comandos completos y funcionales.
+
+
+6. SCRIPT DE ENTRENAMIENTO: train.py
+--------------------------------------------------------------------------------
+El script deberá ejecutar de principio a fin el proceso necesario para construir una 
+versión reutilizable del modelo.
+
+6.1. Entradas mínimas
+- Ruta del archivo de datos etiquetados en formato CSV.
+- Nombre de la variable objetivo, mediante un argumento o configuración documentada.
+- Directorio de salida e identificador de versión del modelo.
+- Semilla aleatoria y parámetros de separación de datos, mediante argumentos o 
+  configuración documentada.
+
+6.2. Proceso requerido
+- Leer los datos y verificar que existan la variable objetivo y las columnas necesarias.
+- Separar entrenamiento y prueba antes de ajustar transformaciones que aprendan 
+  de los datos. Respetar los grupos naturales cuando corresponda.
+- Ajustar la imputación, codificación, escalamiento y demás transformaciones únicamente 
+  con el entrenamiento. Si se utiliza validación cruzada, ajustarlas dentro de cada partición.
+- Entrenar el modelo seleccionado y evaluarlo sobre datos no utilizados para ajustarlo.
+- Evaluar el modelo base con la misma partición y métrica para conservar la 
+  comparación de la Fase 1.
+- Guardar el modelo, el preprocesamiento ajustado y la información de la ejecución. 
+  Mostrar un resumen y las rutas de los archivos generados.
+
+6.3. Salidas mínimas
+- Artefacto reutilizable del modelo y sus transformaciones.
+- Archivo de métricas del modelo y del modelo base, preferiblemente metrics.json.
+- Archivo de metadatos de la versión, preferiblemente metadata.json.
+
+Ejemplo de ejecución desde la carpeta fase-2:
+python train.py --data data/datos.csv --target objetivo --output-dir models --version v1 --seed 42
+
+
+7. SCRIPT DE PREDICCIÓN: predict.py
+--------------------------------------------------------------------------------
+El script deberá cargar una versión almacenada y generar predicciones sobre datos 
+nuevos. No deberá volver a entrenar el modelo ni ajustar nuevamente las transformaciones.
+
+7.1. Entradas mínimas
+- Ruta del artefacto o directorio de la versión que se utilizará.
+- Ruta de un archivo CSV con las variables de entrada. La variable objetivo no 
+  deberá ser necesaria para predecir.
+- Ruta del archivo CSV de salida.
+
+7.2. Validación y procesamiento
+- Comprobar que el modelo y el archivo de entrada existan y puedan leerse.
+- Validar las columnas requeridas y los tipos de datos compatibles con el modelo.
+- Ordenar las variables según el esquema utilizado en el entrenamiento, sin depender 
+  del orden de las columnas del CSV.
+- Aplicar el tratamiento de valores faltantes definido en la versión guardada. Una 
+  celda nula no equivale a una columna obligatoria ausente.
+- Definir y documentar qué ocurre con columnas adicionales y categorías no observadas 
+  durante el entrenamiento.
+- Generar una predicción por fila válida, conservando el orden original. No eliminar 
+  observaciones silenciosamente.
+
+7.3. Salida y manejo de errores
+El CSV de salida deberá contener, como mínimo, una columna llamada prediccion o un 
+nombre equivalente documentado. Deberá permitir relacionar cada resultado con su 
+fila de entrada mediante el orden conservado o un identificador. Para clasificación, 
+se deberá explicar el significado de las etiquetas; las probabilidades son opcionales.
+
+Los errores previsibles, como una columna ausente, un tipo incompatible o un modelo 
+inexistente, deberán producir un mensaje comprensible y finalizar con un código de 
+salida distinto de cero. No se deberá generar un archivo que aparente contener 
+resultados válidos cuando el proceso falla.
+
+Ejemplo de ejecución desde la carpeta fase-2:
+python predict.py --model models/v1/modelo.joblib --input data/ejemplo_prediccion.csv --output outputs/predicciones.csv
+
+
+8. PREPROCESAMIENTO Y REPRODUCIBILIDAD
+--------------------------------------------------------------------------------
+La aplicación deberá conservar toda la información necesaria para transformar datos 
+nuevos exactamente con las reglas aprendidas durante el entrenamiento. Guardar 
+únicamente el estimador final no será suficiente si este depende de transformaciones 
+externas.
+
+- Se recomienda utilizar Pipeline y ColumnTransformer cuando sean apropiados para 
+  el modelo. También se aceptan mecanismos equivalentes correctamente organizados.
+- Si las transformaciones se guardan por separado, deberán pertenecer a la misma 
+  versión del modelo y cargarse conjuntamente.
+- Conservar los nombres y el orden de las variables, las reglas de tratamiento de 
+  nulos y las codificaciones necesarias.
+- No usar la variable objetivo, información posterior al evento ni datos de prueba 
+  para ajustar el preprocesamiento o seleccionar el modelo.
+- Documentar la semilla y las limitaciones de reproducibilidad cuando el algoritmo 
+  tenga componentes no deterministas.
+
+
+9. DEPENDENCIAS Y ACCESO A LOS DATOS
+--------------------------------------------------------------------------------
+- Incluir requirements.txt con las dependencias necesarias y sus versiones explícitas, 
+  incluyendo pytest. Evitar paquetes ajenos a la aplicación.
+- Indicar en el README la versión de Python utilizada. Usar una versión compatible 
+  en el entorno local y en Docker.
+- Documentar cómo obtener los datos, qué archivos se requieren y dónde deben ubicarse.
+- No depender de archivos personales que no estén disponibles para quien evalúa. Si 
+  los datos no se incluyen en GitHub, proporcionar instrucciones reproducibles de acceso.
+- Incluir .gitignore para excluir entornos virtuales, cachés, archivos temporales y 
+  datos o artefactos que no deban almacenarse en Git.
+
+
+10. VERSIONAMIENTO DEL MODELO
+--------------------------------------------------------------------------------
+Cada ejecución de entrenamiento que se conserve deberá tener un identificador único, 
+por ejemplo v1, v2 o una fecha y hora. El versionamiento podrá implementarse mediante 
+carpetas; no se requiere una herramienta especializada.
+
+Estructura de referencia:
+models/
+  ├── v1/
+  │   ├── modelo.joblib
+  │   ├── metrics.json
+  │   └── metadata.json
+  └── v2/
+      ├── modelo.joblib
+      ├── metrics.json
+      └── metadata.json
+
+10.1. Metadatos mínimos
+- Identificador de versión y fecha de creación.
+- Tipo de problema, variable objetivo y algoritmo utilizado.
+- Nombres de las variables de entrada y tipos esperados.
+- Parámetros principales del modelo y semilla aleatoria.
+- Identificación de los datos utilizados: fuente, archivo o versión y cantidad de 
+  observaciones.
+- Estrategia de separación, tamaño de entrenamiento y prueba, y métrica de evaluación.
+- Versión de Python y referencia al archivo de dependencias.
+- Referencia al código utilizado, mediante hash del commit o mecanismo equivalente.
+
+10.2. Comportamiento requerido
+- No sobrescribir silenciosamente una versión existente. Rechazar el identificador 
+  repetido o generar uno nuevo.
+- Permitir seleccionar explícitamente una versión al ejecutar predict.py.
+- Demostrar al menos dos versiones generadas con train.py y cargar ambas.
+- Conservar las métricas y metadatos asociados a cada versión.
+
+
+11. CONTENERIZACIÓN CON DOCKER
+--------------------------------------------------------------------------------
+El equipo deberá entregar un Dockerfile que permita construir una imagen y ejecutar 
+en ella los scripts de entrenamiento y predicción.
+
+11.1. Requisitos de la imagen
+- Usar una imagen base de Python con una versión explícita y compatible; evitar latest.
+- Definir el directorio de trabajo, instalar dependencias y copiar el código necesario.
+- Incluir un .dockerignore que excluya entornos virtuales, cachés, Git y credenciales.
+- Permitir ejecutar train.py y predict.py desde la misma imagen.
+- No entrenar el modelo durante docker build.
+
+11.2. Datos y persistencia
+Los datos deberán poder proporcionarse desde el equipo anfitrión mediante un montaje 
+de carpeta. Los modelos, métricas, metadatos y predicciones deberán persistir fuera 
+del contenedor.
+
+Ejemplos orientativos desde fase-2 (Bash):
+
+Construcción:
+docker build -t modelos-fase2:1.0 .
+
+Entrenamiento en contenedor:
+docker run --rm \
+  -v "$PWD/data:/app/data:ro" \
+  -v "$PWD/models:/app/models" \
+  modelos-fase2:1.0 python train.py \
+  --data data/datos.csv --target objetivo \
+  --output-dir models --version v-docker --seed 42
+
+Predicción en contenedor:
+docker run --rm \
+  -v "$PWD/data:/app/data:ro" \
+  -v "$PWD/models:/app/models:ro" \
+  -v "$PWD/outputs:/app/outputs" \
+  modelos-fase2:1.0 python predict.py \
+  --model models/v-docker/modelo.joblib \
+  --input data/ejemplo_prediccion.csv \
+  --output outputs/predicciones.csv
+
+
+12. PRUEBAS BÁSICAS CON PYTEST
+--------------------------------------------------------------------------------
+Se deberán implementar al menos cinco pruebas automatizadas en tests/:
+
+| Prueba mínima                | Comportamiento que debe verificar                              |
+|------------------------------|----------------------------------------------------------------|
+| Entrenamiento y almacenamiento| Con datos pequeños, genera artefacto cargable, métricas y metadatos. |
+| Carga y predicción            | El artefacto genera predicción por fila y conserva resultados. |
+| Valores faltantes            | Entrada válida con nulos se procesa según la estrategia.        |
+| Entrada inválida             | Ausencia de columna requerida produce error claro (exit code != 0). |
+| Versionamiento               | Crear segunda versión conserva la primera; identificador repetido no sobrescribe. |
+
+Condiciones de ejecución:
+- Ejecución con `python -m pytest` desde fase-2.
+- Usar datos pequeños o sintéticos sin descargas de red.
+- Utilizar directorios temporales (tmp_path).
+- Usar comprobaciones concretas mediante assert o pytest.raises.
+
+
+13. ESTRUCTURA MÍNIMA DE LA ENTREGA
+--------------------------------------------------------------------------------
+repositorio/
+├── fase-1/
+└── fase-2/
+    ├── train.py
+    ├── predict.py
+    ├── requirements.txt
+    ├── Dockerfile
+    ├── .dockerignore
+    ├── README.md
+    ├── tests/
+    │   └── test_aplicacion.py
+    ├── data/
+    │   └── ejemplo_prediccion.csv
+    ├── models/
+    │   ├── v1/
+    │   └── v2/
+    ├── outputs/
+    └── .gitignore
+
+
+14. REQUISITOS DEL README
+--------------------------------------------------------------------------------
+El README de fase-2 debe incluir:
+- Título del proyecto, integrantes, problema y relación con la Fase 1.
+- Correcciones o cambios realizados respecto a la entrega anterior.
+- Versión de Python, creación del entorno e instalación de dependencias.
+- Fuente de los datos, ubicación esperada y esquema del CSV de predicción.
+- Comandos completos de entrenamiento, predicción y consulta de ayuda.
+- Ubicación de las versiones, métricas, metadatos y resultados.
+- Comandos de construcción y ejecución con Docker, incluyendo montajes.
+- Comando para ejecutar pytest y breve descripción de las pruebas.
+- Métrica obtenida, comparación con el modelo base y limitaciones conocidas.
+- Fuentes consultadas y código externo adaptado.
+
+
+15. ENTREGABLES Y TRABAJO COLABORATIVO
+--------------------------------------------------------------------------------
+Entrega 2: 31 de octubre de 2026 (15% de la nota final).
+
+15.1. Git Flow simplificado
+- main: versión estable.
+- develop: integración de desarrollo.
+- feature/*: tareas independientes desde develop.
+- Pull Requests revisados por otro integrante antes de merge.
+
+15.2. Identificación de la versión entregada
+El README debe indicar el commit o etiqueta de Git (ej. entrega-2).
+
+
+16. EVALUACIÓN DE LA FASE 2
+--------------------------------------------------------------------------------
+| Criterio            | Peso | Detalle                                           |
+|---------------------|------|---------------------------------------------------|
+| Entregables         | 10%  | Archivos completos, conservación de fase-1 y acceso a datos. |
+| Funcionamiento      | 30%  | Scripts desde consola, Docker y persistencia.     |
+| Calidad técnica     | 25%  | Código reutilizable, sin fuga de datos, versionamiento. |
+| Pruebas             | 15%  | 5 casos mínimos ejecutables con pytest.           |
+| Documentación       | 15%  | README suficiente para reproducir todo el proceso.|
+| Trabajo colaborativo| 5%   | Ramas, PRs revisados e integración en main.       |
+
+
+17. LISTA DE VERIFICACIÓN ANTES DE ENTREGAR
+--------------------------------------------------------------------------------
+[ ] Carpeta fase-1 conservada y fase-2 organizada.
+[ ] Correcciones de la entrega anterior documentadas.
+[ ] train.py funciona sin ejecutar previamente el notebook.
+[ ] predict.py carga una versión sin reentrenar.
+[ ] Ambos scripts reciben argumentos y soportan --help.
+[ ] Preprocesamiento guardado y reutilizado con el modelo.
+[ ] Separación de datos sin fuga de información.
+[ ] Guardadas métricas del modelo y del modelo base.
+[ ] Dos versiones identificables con metadatos.
+[ ] Crear versión nueva no sobrescribe la anterior.
+[ ] Predicción conserva correspondencia con filas de entrada.
+[ ] Validaciones y manejo de errores previsibles implementados.
+[ ] CSV de ejemplo funciona para predecir sin target.
+[ ] requirements.txt listo y testeado.
+[ ] Imagen Docker se construye correctamente.
+[ ] Entrenamiento y predicción funcionan dentro del contenedor.
+[ ] Modelos y resultados persisten fuera del contenedor.
+[ ] 5 pruebas con pytest ejecutan y pasan.
+[ ] README contiene comandos reales y evidencias.
+[ ] Pull Requests revisados e integrados en main.
+[ ] Etiqueta/commit de entrega generado.
+
+================================================================================

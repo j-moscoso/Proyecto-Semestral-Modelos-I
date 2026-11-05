@@ -11,6 +11,10 @@ El objetivo es predecir `price` a partir de las características de un vehículo
 
 El archivo `data/train.csv` contiene 188.533 observaciones y 13 columnas: `id`, 11 predictores y el objetivo `price`. `id` es un identificador consecutivo y no se usa como predictor. Los predictores incluyen marca, modelo, año, kilometraje, combustible, motor, transmisión, colores, reporte de accidente y estado del título.
 
+## Procedencia de los datos
+
+Playground Series S4E9 es un conjunto sintético: sus datos de entrenamiento y prueba fueron generados por un modelo de aprendizaje profundo entrenado con el [Used Car Price Prediction Dataset](https://www.kaggle.com/datasets/taeefnajib/used-car-price-prediction-dataset), que según su propia descripción combina datos reales observados y datos sintéticos. No es posible determinar qué proporción de las 188.533 filas refleja registros reales. Los resultados describen el comportamiento del modelo sobre estos datos y no se extrapolan al mercado real, ni permiten confirmar que anuncios repetidos correspondan a vehículos repetidos o justificar por sí solos una aplicación comercial.
+
 | Variable | Valores faltantes | Porcentaje | Tratamiento |
 | --- | ---: | ---: | --- |
 | `accident` | 2.452 | 1,301% | Imputación como categoría `Desconocido`; `None reported` se conserva como valor observado distinto. |
@@ -26,6 +30,8 @@ Los precios observados van de 2.000 a 2.954.083; la mediana es 30.825 y la media
 El notebook separa `price` y descarta `id`, después realiza una partición aleatoria reproducible 80/20 con `RANDOM_STATE = 42`. Las extracciones de HP, litros y cilindros desde `engine`, y de tipo/velocidades desde `transmission`, son funciones por fila definidas en `features.py`.
 
 Las extracciones, `build_preprocessor()` y el estimador están juntos en un `Pipeline`. La imputación numérica usa mediana; las variables categóricas se imputan como `Desconocido`; las categorías compactas usan One-Hot Encoding y las de alta cardinalidad usan codificación ordinal con manejo de categorías no vistas. El módulo escala las numéricas; este paso se conserva aunque Random Forest no dependa del escalamiento. El preprocesador y el modelo se ajustan solo con entrenamiento y, en CV, dentro de cada fold. El test no participa en los ajustes ni en la selección del modelo.
+
+**Nota sobre el EDA:** el análisis exploratorio consultó todo el conjunto, incluido `price`, para orientar decisiones de preparación. Esto expuso exploratoriamente observaciones que luego quedaron en `test`, pero no se ajustaron transformadores ni modelo con ellas: imputadores, codificadores, escalador y modelo se ajustan únicamente con `train`.
 
 No hay duplicados exactos de predictores, pero se repiten combinaciones de marca, modelo y año. Sin VIN no puede determinarse si anuncios repetidos corresponden al mismo vehículo; por ello, el split aleatorio podría dar una evaluación optimista para vehículos o versiones muy similares.
 
@@ -57,7 +63,7 @@ fase-1/
 └── requirements.txt
 ```
 
-El notebook ejecutable de la entrega es `fase-1/notebook.ipynb`. Los notebooks de `fase-1/notebooks/` son documentos complementarios.
+El notebook ejecutable de la entrega es `fase-1/notebook.ipynb`.
 
 ## Instalación y ejecución
 
@@ -65,8 +71,8 @@ Se probó con Python 3.11.9 y las versiones fijadas en `requirements.txt`. Desde
 
 ```powershell
 py -3.11 -m venv .venv
-\.venv\Scripts\python.exe -m pip install --upgrade pip
-\.venv\Scripts\python.exe -m pip install -r fase-1/requirements.txt
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r fase-1/requirements.txt
 code .
 ```
 
