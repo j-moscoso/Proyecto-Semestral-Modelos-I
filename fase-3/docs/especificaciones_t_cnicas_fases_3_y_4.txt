@@ -1,0 +1,136 @@
+UNIVERSIDAD DE ANTIOQUIA / MODELOS Y SIMULACIÓN DE SISTEMAS I
+Proyecto Integrador 2026 II | Docente: Andrés Parra
+Especificaciones técnicas / Fases 3 y 4
+
+================================================================================
+FASE 3: API REST
+================================================================================
+
+Objetivo: consultar el modelo y entrenar una versión mediante solicitudes HTTP.
+
+Trabajen en el mismo repositorio. Conserven fase-1/ y fase-2/ y agreguen fase-3/. Reutilicen las funciones de entrenamiento y predicción, el esquema de entradas y el preprocesamiento guardado. Pueden usar FastAPI o Flask.
+
+1. Implementar tres operaciones
+-------------------------------
+- GET /health
+  Devuelve HTTP 200 y un JSON que indica que la API está en ejecución.
+
+- POST /predict
+  Recibe un registro JSON con las variables predictoras del proyecto. Carga una versión guardada, aplica sus transformaciones y devuelve HTTP 200 con la predicción y la versión utilizada. Para clasificación, devuelvan la etiqueta; para regresión, el valor estimado.
+
+- POST /train
+  Entrena con los datos y la configuración de la fase 2. Guarda una versión identificable con su modelo, métricas y metadatos. Devuelve su identificador al terminar (HTTP 200 o 201). Conserven las versiones anteriores.
+
+2. Validar entradas y responder a errores
+-----------------------------------------
+Comprueben los campos obligatorios y sus tipos. Si falta una variable o llega un tipo incompatible, respondan con HTTP 400 o 422 y un mensaje que identifique el problema. Para un valor nulo permitido, apliquen la regla guardada en la fase 2. La predicción debe funcionar sin la variable objetivo.
+
+Si el modelo configurado para predecir no está disponible, devuelvan un error comprensible (por ejemplo, HTTP 503). Indiquen en el README cómo seleccionar una versión disponible.
+
+3. Probar y entregar
+--------------------
+- Pruebas: Con pytest verifiquen tres casos: /health responde 200, una entrada válida devuelve predicción y versión, y una entrada con un campo obligatorio ausente se rechaza. Para /train basta una comprobación manual que muestre la nueva versión guardada.
+- Carpeta fase-3/: Incluyan el código de la API, dependencias, Dockerfile actualizado, pruebas, README y un cliente de prueba sencillo (script Python o archivo de comandos curl) que envíe al menos una predicción con datos de su proyecto.
+
+--------------------------------------------------------------------------------
+CÓMO CONECTAR LA API AL MODELO (FASE 3)
+--------------------------------------------------------------------------------
+Usen un registro del CSV de ejemplo de su propio proyecto.
+
+Del CSV de fase 2 a una solicitud JSON:
+Elijan una fila de ejemplo y conviertan cada columna predictora en una clave JSON. Conserven los nombres y tipos usados al entrenar: un número se envía como número y una categoría como texto. Envíen todas las variables requeridas. Si una columna admite nulos, envíen null para representar un dato faltante.
+
+Ejemplo reducido de regresión:
+Supongan que un proyecto estima consumo a partir de dos variables. El cliente envía el primer objeto a POST /predict y recibe el segundo:
+Solicitud: {"temperatura": 24.5, "turno": "tarde"}
+Respuesta: {"prediccion": 18.7, "version": "v1"}
+
+Qué hace la función que atiende cada ruta:
+- /predict: Localicen la función que usa predict.py para cargar el modelo y transformar datos nuevos. Desde la ruta, validen el JSON, construyan una tabla de una fila con las columnas en el orden del esquema y pásenla al mismo preprocesamiento y modelo guardados. Devuelvan el primer resultado como número o etiqueta JSON. Si falta una clave, indiquen su nombre en el mensaje de error.
+- /train: Reutilicen la función que llama train.py. Para simplificar, la ruta puede tomar el archivo de datos, la variable objetivo y la semilla de la configuración del proyecto y aceptar un cuerpo vacío. Generen un identificador disponible y respondan cuando los artefactos estén guardados. La siguiente predicción puede seguir usando v1 hasta que cambien la versión configurada.
+
+Cómo ensayarlo antes de entregar:
+- Docker y cliente: Adapten el comando de inicio del Dockerfile para arrancar el servidor en 0.0.0.0. Por ejemplo, con FastAPI y un objeto app definido en api.py, pueden usar:
+  uvicorn api:app --host 0.0.0.0 --port 8000
+  Publiquen ese puerto con -p 8000:8000 y reutilicen los montajes de datos y modelos de fase 2. Desde el cliente envíen el JSON a http://localhost:8000/predict.
+- pytest: Usen el cliente de pruebas del framework. Partan del mismo registro válido para dos ensayos: en el primero comprueben el código 200 y las claves de la respuesta; en el segundo quiten una variable obligatoria y comprueben el código de error y el mensaje. Para /health basta comprobar el 200 y el estado informado. Usen un modelo pequeño disponible durante las pruebas.
+
+
+================================================================================
+FASE 4: MONITOREO
+================================================================================
+
+Objetivo: comprobar cómo se usa la API e identificar qué versión predice.
+
+Conserven fase-3/ y agreguen fase-4/ con los cambios necesarios para registrar la actividad. Un archivo CSV o JSONL y un script de Python son suficientes para esta fase.
+
+1. Registrar las solicitudes de predicción
+------------------------------------------
+Agreguen una fila o evento por cada llamada a /predict, incluidas las rechazadas por validación. Guarden fecha y hora, código HTTP, versión utilizada y predicción. En un error pueden dejar la predicción vacía y, si no se usó modelo, también la versión. Conserven el registro entre ejecuciones. Basta con estos campos.
+
+2. Calcular dos métricas de operación
+-------------------------------------
+Entreguen un script que lea el registro y muestre el total de solicitudes y el porcentaje de solicitudes fallidas. Cuenten como fallidas las respuestas HTTP 4xx o 5xx. Si el registro está vacío, muestren total 0 e indiquen «sin solicitudes» para el porcentaje.
+
+Ejemplo de comprobación:
+Si envían dos entradas válidas y una inválida sobre un registro vacío, el script debe mostrar 3 solicitudes y 33,3% de fallos. Ese porcentaje describe el funcionamiento del servicio. Medir la calidad predictiva requeriría conocer los resultados reales.
+
+3. Conservar versiones y definir cuándo reentrenar
+--------------------------------------------------
+Reutilicen dos versiones guardadas en las fases anteriores. Identifiquen cuál usa la API e indiquen cómo volver a la anterior mediante la configuración existente. Pueden reutilizar la versión creada al probar /train.
+
+Escriban una política de dos o tres frases que indique cuándo revisar el modelo, quién ejecuta /train y cómo se decide si se activa la nueva versión. Por ejemplo: «Al reunir 100 casos nuevos con resultado real, el equipo entrenará una candidata. Comparará ambas versiones con la misma métrica sobre datos reservados y activará la candidata solo si mejora». Adapten la regla a sus datos. Basta documentarla.
+
+4. Entregar un reporte breve
+----------------------------
+En el README de fase-4/ incluyan una sección «Reporte» con las solicitudes que enviaron, los dos indicadores obtenidos y una frase que explique el resultado. Agreguen allí mismo la política de reentrenamiento y los identificadores de las dos versiones. Entreguen el script, el código de registro y una muestra del registro utilizado.
+
+--------------------------------------------------------------------------------
+CÓMO LEER EL REGISTRO DE LA API (FASE 4)
+--------------------------------------------------------------------------------
+Una misma ejecución sirve para probar el registro y escribir el reporte.
+
+Dónde registrar una solicitud:
+Escriban el evento cuando ya conozcan el resultado de /predict. En una predicción válida, tomen la versión del modelo que produjo la respuesta. Para un error, registren el código devuelto. Si su framework rechaza la entrada antes de llamar a la función de predicción, usen su manejador de errores de validación para registrar ese rechazo. Comprueben que cada intento genere una sola fila.
+
+Abran el archivo en modo de agregar para conservar el historial. Si usan CSV, escriban el encabezado al crear el archivo. En Docker, guárdenlo en una carpeta montada, igual que hicieron con los modelos de la fase 2.
+
+Qué debería aparecer al ensayar:
+Sobre un registro vacío, envíen dos entradas válidas y una tercera a la que le falte una variable. Este ejemplo ilustra el contenido del CSV para un modelo de regresión:
+
+fecha_hora,estado_http,version,prediccion
+2026-11-06T10:00:00,200,v1,18.7
+2026-11-06T10:01:00,200,v1,19.2
+2026-11-06T10:02:00,422,,
+
+Cómo pasar de las filas al reporte:
+El script recibe o localiza el archivo y cuenta sus filas de datos. Luego cuenta las que tienen un código entre 400 y 599. Dividan el segundo conteo por el primero y multipliquen por 100. En el ejemplo hay tres solicitudes, una fallida y una tasa de fallos de 33,3%. Si al repetir el ensayo aparecen solo dos filas, revisen el manejo de entradas rechazadas.
+
+Ejemplo de interpretación para el README:
+«La API procesó dos registros con v1 y rechazó el tercero porque faltaba la temperatura. La tasa de fallos fue $1/3$ (33,3%). El rechazo era el resultado esperado de la prueba de validación». Sustituyan estos valores y la causa por lo observado en su ejecución.
+
+Cómo decidir si conviene cambiar de versión:
+Un campo ausente se corrige en quien envía los datos. Para revisar el desempeño del modelo, en cambio, se necesitan ejemplos con el resultado real. Escojan una regla viable para su proyecto: indiquen qué datos activarían la revisión y con qué métrica de la fase 2 compararían la candidata y la versión activa sobre los mismos casos reservados. Si conservan v1, expliquen cómo seleccionarla en la configuración.
+
+
+================================================================================
+COMPROBACIÓN DE LA ENTREGA
+================================================================================
+
+Usen esta secuencia para verificar el proyecto desde una copia nueva del repositorio.
+
+Fase 3 / Del contenedor a la primera predicción:
+- [01] Desde la ubicación indicada en el README, construyan la imagen e inicien el contenedor. Documenten el puerto, el acceso a los datos y el montaje donde se guardan los modelos.
+- [02] Consulten /health. Ejecuten el cliente con un registro realista y comprueben que la respuesta contiene la predicción y la versión. Incluyan en el README ese ejemplo de solicitud y respuesta.
+- [03] Ejecuten /train e identifiquen la nueva versión en el almacenamiento persistente. Ejecuten python -m pytest según el README y comprueben que pasan las tres pruebas.
+
+Fase 4 / Del registro al reporte:
+- [04] Arranquen la API con el registro habilitado y una versión identificada. Indiquen en el README el comando de inicio y la ubicación del registro persistente.
+- [05] Envíen dos solicitudes válidas y una con un campo obligatorio ausente. Ejecuten el script de monitoreo sobre ese registro y comparen sus resultados con las filas guardadas.
+- [06] Comprueben que el reporte corresponde a esa ejecución, que la política de reentrenamiento está escrita y que otra persona puede localizar ambas versiones.
+
+Cómo presentar el trabajo:
+Mantengan el flujo de Git de las fases anteriores: cada integrante aporta mediante una rama de trabajo y un Pull Request revisado hacia develop. Integren la entrega en main e identifíquenla por commit o etiqueta.
+
+Alcance de cierre:
+La demostración local en Docker, las pruebas indicadas y el reporte dentro del README cubren la entrega. El despliegue en la nube, los tableros gráficos y el reentrenamiento automático son opcionales.

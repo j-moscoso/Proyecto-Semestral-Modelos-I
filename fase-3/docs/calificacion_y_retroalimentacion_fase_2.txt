@@ -1,0 +1,54 @@
+Fase 2 Precios de vehículos usados
+Modelos y Simulación de Sistemas I | Universidad de Antioquia
+
+Integrantes: Samuel Castaño Arenas · Juan Manuel Moscoso Torres · Slleider David Rojas Aleman
+Horario y grupo: Martes - Jueves - 16-20 · G14
+Repositorio: j-moscoso/Proyecto-Semestral-Modelos-I
+Calificación: 100/100 · 5,00/5,00
+
+================================================================================
+TABLA DE EVALUACIÓN
+================================================================================
+
+- Criterio: Entregables | Puntaje: 10/10
+  Justificación: Archivos de fase 2 organizados, continuidad con fase 1 y acceso documentado a los datos, ejemplos y artefactos necesarios.
+
+- Criterio: Funcionamiento | Puntaje: 30/30
+  Justificación: Entrenamiento y predicción por comandos, modelos versionados y resultados persistentes. Se revisaron las pruebas locales y los comandos y evidencias Docker aportados.
+
+- Criterio: Calidad técnica | Puntaje: 25/25
+  Justificación: Código reutilizable, preprocesamiento consistente entre entrenamiento e inferencia, partición previa al ajuste y manejo de errores y versiones.
+
+- Criterio: Pruebas | Puntaje: 15/15
+  Justificación: La suite ejecutada registra 9 pruebas satisfactorias. Comprueba el recorrido de entrenamiento, carga, predicción y los casos de entrada y persistencia contemplados en la entrega.
+
+- Criterio: Documentación | Puntaje: 15/15
+  Justificación: README con instalación, comandos, esquema de entradas, métricas, versiones y evidencia suficiente para reproducir el flujo de fase 2.
+
+- Criterio: Trabajo colaborativo | Puntaje: 5/5
+  Justificación: Se observan aportes técnicos e integración mediante ramas y Pull Requests. La entrega permite identificar el trabajo realizado y su continuidad.
+
+- Total: 100/100
+  Calificación final: 5,00/5,00.
+
+================================================================================
+RETROALIMENTACIÓN DE LA FASE 2
+================================================================================
+
+Resultado de la entrega:
+Pipeline completo, escritura segura de artefactos y resultados, dos versiones y evidencia Docker. Conserven la extracción de características de motor y transmisión dentro del recorrido persistido del modelo.
+
+Aspectos que deben mantenerse:
+La evidencia revisada cubre los requisitos de esta fase y no se señalan faltantes sustanciales. Conserven las versiones entregadas y sus metadatos como referencia. Al modificar la aplicación, ejecuten de nuevo las pruebas y comparen las predicciones de una pequeña entrada conocida para detectar cambios no previstos.
+
+Continuidad hacia la API:
+Para la siguiente fase, reutilicen las funciones de carga, validación y predicción existentes. Definan los campos requeridos, sus tipos, las unidades y el tratamiento de nulos y categorías nuevas. La respuesta debe permitir reconocer la versión utilizada y mantener el orden de las observaciones. No es necesario cambiar de algoritmo ni mejorar la métrica para conservar lo logrado en fase 2.
+
+Documentación y trazabilidad:
+Mantengan en el README comandos que puedan copiarse y ejecutarse, con rutas que correspondan al repositorio. Para cada versión, relacionen el modelo, las métricas, el entorno y el commit del código. Si las semillas o los datos de prueba cambian, expliquen esa diferencia antes de interpretar una métrica mayor o menor como mejora del modelo.
+
+================================================================================
+ALCANCE DE LA COMPROBACIÓN
+================================================================================
+
+Se revisó la fase 2 del commit c2153a7e. Se ejecutó la suite disponible: 9 pruebas satisfactorias. La revisión de Docker corresponde al archivo de construcción, los comandos y la evidencia del repositorio; no se reconstruyeron imágenes en el entorno de revisión. La nota conserva los seis criterios y pesos de la especificación técnica de fase 2.
