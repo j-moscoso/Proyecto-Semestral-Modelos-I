@@ -149,7 +149,7 @@ El cliente lee `data/ejemplo_prediccion.csv`. El argumento global `--url` puede 
 Los siguientes comandos se usan desde PowerShell en `fase-3/`. Construyen la imagen, publican el puerto `8000`, montan `data` como solo lectura y `models` con escritura, y ejecutan pytest en el contenedor:
 
 ```powershell
-docker build -t modelos-fase3:1.0 .\
+docker build -t modelos-fase3:1.0 .
 docker run --rm -p 8000:8000 -e "MODEL_VERSION=v1" -e "GIT_COMMIT=$env:GIT_COMMIT" `
   -v "$(Resolve-Path .\data):/app/data:ro" `
   -v "$(Resolve-Path .\models):/app/models" `

@@ -1,6 +1,6 @@
 # Contrato de la API de predicción de vehículos
 
-La API FastAPI de la Fase 3 expone predicción, consulta de salud y entrenamiento
+La API FastAPI de la Fase 4 expone predicción, consulta de salud y entrenamiento
 de versiones. Los ejemplos corresponden al contrato y a la primera fila de
 `data/ejemplo_prediccion.csv`; la predicción se deja como `<valor>` para no
 presentarla como un resultado medido aquí.
