@@ -49,7 +49,7 @@ Deja esa terminal abierta mientras haces las solicitudes y detenla con `Ctrl+C`.
 En Docker, desde `fase-4/`, publica el puerto y monta datos, modelos y registros:
 
 ```powershell
-docker build -t modelos-fase4:1.0 .\
+docker build -t modelos-fase4:1.0 .
 docker run --rm -p 8000:8000 -e "MODEL_VERSION=v1" -e "LOG_PATH=/app/logs/predicciones.csv" `
   -v "$(Resolve-Path .\data):/app/data:ro" `
   -v "$(Resolve-Path .\models):/app/models" `

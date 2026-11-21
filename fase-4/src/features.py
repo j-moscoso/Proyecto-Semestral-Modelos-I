@@ -3,8 +3,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 
 from src.schema import CATEGORICAL_INPUT, NUMERIC_INPUT
@@ -146,4 +147,36 @@ def build_preprocessor() -> ColumnTransformer:
             ("onehot", onehot_pipeline, onehot_features),
         ],
         remainder="drop",
+    )
+
+
+def build_pipeline(
+    seed: int,
+    n_estimators: int = 40,
+    max_depth: int = 20,
+    min_samples_leaf: int = 3,
+    max_features: float = 0.7,
+) -> Pipeline:
+    """Construye el pipeline completo de normalización, extracción y regresión."""
+    return Pipeline(
+        steps=[
+            ("normalize", FunctionTransformer(normalize_missing, validate=False)),
+            ("engine_features", FunctionTransformer(extract_engine_features, validate=False)),
+            (
+                "transmission_features",
+                FunctionTransformer(extract_transmission_features, validate=False),
+            ),
+            ("preprocessor", build_preprocessor()),
+            (
+                "model",
+                RandomForestRegressor(
+                    n_estimators=n_estimators,
+                    max_depth=max_depth,
+                    min_samples_leaf=min_samples_leaf,
+                    max_features=max_features,
+                    n_jobs=-1,
+                    random_state=seed,
+                ),
+            ),
+        ]
     )

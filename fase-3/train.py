@@ -8,7 +8,8 @@ from typing import Any
 from sklearn.model_selection import KFold, cross_validate
 
 from src.data import load_training_data, split_data
-from src.modeling import build_baseline, build_pipeline, compute_metrics
+from src.features import build_pipeline
+from src.modeling import build_baseline, compute_metrics
 from src.schema import AppError, InputValidationError
 from src.versioning import (
     build_metadata,
