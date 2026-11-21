@@ -105,3 +105,37 @@ def trained_version(tmp_path, training_csv, monkeypatch):
         "version_dir": output_dir / "v1",
         "pipeline_before_save": captured["pipeline"],
     }
+
+
+@pytest.fixture
+def registro_valido(synthetic_data) -> dict:
+    """Devuelve la primera fila sintética con las columnas de entrada nativas."""
+    from src.schema import INPUT_COLUMNS
+
+    record = {}
+    for column in INPUT_COLUMNS:
+        value = synthetic_data.iloc[0][column]
+        if pd.isna(value):
+            record[column] = None
+        elif isinstance(value, np.generic):
+            record[column] = value.item()
+        else:
+            record[column] = value
+    return record
+
+
+@pytest.fixture
+def api_client(trained_version, training_csv, monkeypatch, tmp_path):
+    """Crea un cliente aislado con la versión sintética v1."""
+    from src import serving
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("MODELS_DIR", str(trained_version["output_dir"]))
+    monkeypatch.setenv("MODEL_VERSION", "v1")
+    monkeypatch.setenv("TRAIN_DATA", str(training_csv))
+    monkeypatch.setenv("LOG_PATH", str(tmp_path / "logs" / "predicciones.csv"))
+    serving.clear_model_cache()
+
+    import api
+
+    return TestClient(api.app)
