@@ -81,6 +81,7 @@ def crear_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("todos", help="Predice las 12 filas")
     subparsers.add_parser("faltante", help="Envía una fila sin brand")
     subparsers.add_parser("entrenar", help="Solicita un entrenamiento")
+    subparsers.add_parser("demo", help="Envía dos predicciones y una entrada inválida")
     return parser
 
 
@@ -128,12 +129,30 @@ def main(argv: list[str] | None = None) -> int:
                 body=fila,
             )
             imprimir_respuesta(codigo, cuerpo)
-        else:
+        elif args.comando == "entrenar":
             codigo, cuerpo = solicitar(
                 f"{args.url}/train",
                 method="POST",
                 body={},
                 timeout=900,
+            )
+            imprimir_respuesta(codigo, cuerpo)
+        else:
+            filas = leer_filas()
+            for fila in filas[:2]:
+                codigo, cuerpo = solicitar(
+                    f"{args.url}/predict",
+                    method="POST",
+                    body=fila,
+                )
+                imprimir_respuesta(codigo, cuerpo)
+
+            fila_incompleta = dict(filas[0])
+            fila_incompleta.pop("brand", None)
+            codigo, cuerpo = solicitar(
+                f"{args.url}/predict",
+                method="POST",
+                body=fila_incompleta,
             )
             imprimir_respuesta(codigo, cuerpo)
         return 0
