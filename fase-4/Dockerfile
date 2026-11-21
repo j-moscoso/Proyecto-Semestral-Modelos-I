@@ -11,8 +11,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ src/
 COPY tests/ tests/
 COPY train.py predict.py api.py cliente_prueba.py pytest.ini ./
+COPY monitor.py ./
 
-RUN mkdir -p /app/data /app/models
+RUN mkdir -p /app/data /app/models /app/logs
 
 EXPOSE 8000
 
