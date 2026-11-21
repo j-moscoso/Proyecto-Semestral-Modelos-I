@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from src.api_schema import EntrenarSolicitud, VehiculoEntrada
-from src import serving
+from src import monitoring, serving
 from src.schema import (
     AppError,
     InputValidationError,
@@ -15,6 +15,36 @@ from src.schema import (
 
 
 app = FastAPI(title="API de precios de vehículos usados", version="4.0")
+
+
+@app.middleware("http")
+async def registrar_prediccion(request: Request, call_next):
+    """Registra una fila por cada intento de POST a /predict."""
+    if request.method != "POST" or request.url.path != "/predict":
+        return await call_next(request)
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        monitoring.registrar_solicitud(
+            500,
+            getattr(request.state, "version", None),
+            getattr(request.state, "prediccion", None),
+        )
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "error_interno",
+                "mensaje": "Error interno del servidor.",
+            },
+        )
+
+    monitoring.registrar_solicitud(
+        response.status_code,
+        getattr(request.state, "version", None),
+        getattr(request.state, "prediccion", None),
+    )
+    return response
 
 
 def _mensaje_validacion(error: dict) -> str:
