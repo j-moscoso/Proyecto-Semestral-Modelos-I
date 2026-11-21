@@ -13,3 +13,7 @@ El conjunto de Playground Series S4E9 es sintético: sus datos de entrenamiento 
 ## Fase 3
 
 La Fase 3 incorpora una API REST para predicción y entrenamiento de versiones. Consulta el [README de fase-3](./fase-3/README.md) para instalación, uso, pruebas y evidencia.
+
+## Fase 4
+
+La Fase 4 agrega registro de solicitudes y monitoreo a la API. Consulta el [README de fase-4](./fase-4/README.md) para instalación, ejecución, pruebas y evidencia.
